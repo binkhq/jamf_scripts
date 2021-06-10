@@ -1,7 +1,6 @@
 #!/bin/bash
 
-fix_onedrive()
-{
+fix_onedrive() {
 	if [ -d "/Applications/OneDrive.localized/OneDrive.app" ]
 	then
 		echo "$(date -u) - Found Incorrectly configured OneDrive, cleaning up"

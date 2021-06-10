@@ -1,7 +1,6 @@
 #!/bin/bash
 
-uninstall_1password()
-{
+uninstall_1password() {
     echo "$(date -u) - Uninstalling 1Password 7"
     pgrep "1Password 7" | xargs kill -9
     if [ -f "/Applications/1Password 7.app.zip" ]

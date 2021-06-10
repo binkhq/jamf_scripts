@@ -1,7 +1,6 @@
 #!/bin/bash
 
-uninstall_snapcamera()
-{
+uninstall_snapcamera() {
     _user=$(/bin/ls -l /dev/console | /usr/bin/awk '{ print $3 }')
 
     if [ -f "/Library/LaunchDaemons/com.snap.SnapCameraRemover.plist" ]

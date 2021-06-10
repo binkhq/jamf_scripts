@@ -13,8 +13,7 @@ You will be prompted again until the patching process is complete
 
 Please contact the Bink Helpdesk for any questions on helpdesk@bink.com or via Teams"
 
-download_logo()
-{
+download_logo() {
     if [ ! -f "/tmp/$(basename $LOGO)" ]
     then
         echo "$(date -u) - Downloading Logo"
@@ -22,8 +21,7 @@ download_logo()
     fi
 }
 
-display_nag()
-{
+display_nag() {
     download_logo
 
     echo "$(date -u) - Displaying Nag"
