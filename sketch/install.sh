@@ -15,7 +15,7 @@ install_sketch() {
 
 install_abstract() {
     echo "$(date -u) - Installing Abstract"
-    curl -sS -L https://api.goabstract.com/releases/latest/download -o /tmp/abstract.zip
+    curl -sS -L "https://api.goabstract.com/releases/latest/download" -o /tmp/abstract.zip
     unzip -o /tmp/abstract.zip -d /tmp >/dev/null
     pgrep "Abstract" | xargs kill -9
     if [ -d "/Applications/Abstract.app" ]
@@ -28,7 +28,7 @@ install_abstract() {
 
 install_craftmanager() {
     echo "$(date -u) - Installing CraftManager"
-    curl -sS -L https://craft-assets.invisionapp.com/CraftManager/production/CraftManager.zip -o /tmp/craftmanager.zip
+    curl -sS -L "https://craft-assets.invisionapp.com/CraftManager/production/CraftManager.zip" -o /tmp/craftmanager.zip
     unzip -o /tmp/craftmanager.zip -d /tmp >/dev/null
     pgrep "CraftManager" | xargs kill -9
     if [ -d "/Applications/CraftManager.app" ]
