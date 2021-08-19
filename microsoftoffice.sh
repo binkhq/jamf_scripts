@@ -7,19 +7,19 @@ office_upgrade() {
         echo "$(date) - Processing: $app"
         if [ -d "$app_path" ]; then
             if mdls "$app_path" | grep kMDItemAppStoreHasReceipt >/dev/null; then
-                echo "$(date -u) -     is already a MAS app, skipping"
+                echo "$(date -u) - is already a MAS app, skipping"
             else
-                echo "$(date -u) -     is not a MAS app"
+                echo "$(date -u) - is not a MAS app"
                 if pgrep "$app" >/dev/null; then
-                    echo "$(date -u) -     is running, unable to proceed with removal"
+                    echo "$(date -u) - is running, unable to proceed with removal"
                 else
-                    echo "$(date -u) -     uninstalling $app"
+                    echo "$(date -u) - uninstalling $app"
                     rm -rf "$app_path"
                 fi
             fi
         fi
         if [ -d "$install_backup_path" ]; then
-            echo "$(date -u) -     Removing $install_backup_path"
+            echo "$(date -u) - Removing $install_backup_path"
             rm -rf "$install_backup_path"
         fi
     done

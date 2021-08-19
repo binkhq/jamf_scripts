@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 LOGO="https://api.gb.bink.com/content/media/logos/bink_cards.png"
 TITLE="macOS Update Required"

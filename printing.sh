@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 printer_admins() {
     if ! dscl . -read /Groups/lpadmin | grep ABCDEFAB-CDEF-ABCD-EFAB-CDEF0000000C >/dev/null
