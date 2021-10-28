@@ -18,7 +18,7 @@ install() {
     echo "$(date -u) - Installing Insomnia"
     curl -sS -L "https://updates.insomnia.rest/downloads/mac/latest?app=com.insomnia.app" -o "/tmp/insomnia.dmg"
     hdiutil attach "/tmp/insomnia.dmg" >/dev/null
-    cp -R '/Volumes/Insomnia'*'/Insomnia.app' "/Applications"
+    cp -R /Volumes/Insomnia*/Insomnia.app /Applications
     hdiutil eject /Volumes/Insomnia* >/dev/null
     rm "/tmp/insomnia.dmg"
 }
