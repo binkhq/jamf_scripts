@@ -1,9 +1,23 @@
 #!/bin/zsh
 
+# This script is desgined to be run from Jamf where the $4 script args can be set to
+# one of either "install" or "uninstall" to facilitate installation/uninstallation
+# alternatively, just remove the if/else block at the bottom and set it to one of
+# "install" or "uninstall"
+
+# Note: We provision our Macs with a `jamfadmin` user as part of the PreStage Enrollment
+# If you use a different username, make sure to modify the install_user_launch_agent and
+# install_user_launch_agent functions
+
+# TODO: Make the above disclaimer a variable instead, pull requests welcome
+
+# Much of this script was inspired by the work of https://github.com/rtrouton
+# For example: https://github.com/autopkg/rtrouton-recipes/blob/master/Privileges/Scripts/postinstall
+
 set -e
 
 fetch_jq() {
-    if [[ -n $(/usr/bin/arch | grep arm64) ]]; then
+    if /usr/bin/arch | grep -q arm64; then
         arch="arm64"
         link="https://binkpublic.blob.core.windows.net/public/jq/1.6/arm64"
     else
@@ -27,10 +41,10 @@ uninstall() {
     echo "$(date -u) - Cleaning up"
     rm -rf /Library/PrivilegedHelperTools
     rm -f /Library/LaunchDaemons/corp.sap.privileges.helper.plist
+    remove_user_launch_agent
 }
 
 postinstall() {
-    # Modified from: https://github.com/autopkg/rtrouton-recipes/blob/master/Privileges/Scripts/postinstall
     helperPath="/Applications/Privileges.app/Contents/XPCServices/PrivilegesXPC.xpc/Contents/Library/LaunchServices/corp.sap.privileges.helper"
     helperPlist="/Library/LaunchDaemons/corp.sap.privileges.helper.plist"
 
@@ -71,15 +85,68 @@ EOF
     launchctl bootstrap system "$helperPlist"
 }
 
+install_user_launch_agent() {
+    users=$(dscl . list /Users | grep -v '_\|daemon\|jamfadmin\|nobody\|root')
+    for i in $users
+        do
+            echo "$(date -u) - Installing LaunchAgent for user $i"
+            if [[ ! -d "/Users/$i/Library/LaunchAgents" ]]; then
+                echo "$(date -u) - Creating LaunchAgents directory for user $i"
+                mkdir -p "/Users/$i/Library/LaunchAgents"
+                chown "$i":"staff" "/Users/$i/Library/LaunchAgents"
+            fi
+            if [[ ! -f "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist" ]]; then
+                echo "$(date -u) - Adding 'corp.sap.privileges.plist' to LaunchAgents for user $i"
+                cat > "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>corp.sap.privileges</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Applications/Privileges.app/Contents/Resources/PrivilegesCLI</string>
+		<string>--remove</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>LimitLoadToSessionType</key>
+	<string>Aqua</string>
+</dict>
+</plist>
+EOF
+                chown "$i":"staff" "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist"
+            fi
+    done
+}
+
+remove_user_launch_agent() {
+    users=$(dscl . list /Users | grep -v '_\|daemon\|jamfadmin\|nobody\|root')
+    for i in $users
+        do
+            echo "$(date -u) - Removing LaunchAgent for user $i"
+            rm -f "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist"
+    done
+}
+
 install() {
     fetch_jq
     uninstall
     echo "$(date -u) - Installing Privileges"
-    curl -sS -L $(curl -s https://api.github.com/repos/SAP/macOS-enterprise-privileges/releases/latest | /tmp/jq -r '.assets[] | select(.name == "Privileges.zip") | .browser_download_url') -o /tmp/Privileges.zip
+    curl -sS -L "$(curl -s https://api.github.com/repos/SAP/macOS-enterprise-privileges/releases/latest | /tmp/jq -r '.assets[] | select(.name == "Privileges.zip") | .browser_download_url')" -o /tmp/Privileges.zip
     unzip -o /tmp/Privileges.zip -d /tmp >/dev/null
     mv /tmp/Privileges.app /Applications
     rm /tmp/Privileges.zip
     postinstall
+    install_user_launch_agent
+    echo "$(date -u) - Installation Complete"
 }
 
-install
+if [[ $4 == "install" ]]; then
+    install
+elif [[ $4 == "uninstall" ]]; then
+    uninstall
+else
+    echo "Unrecognised command, exiting..."
+fi
