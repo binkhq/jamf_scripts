@@ -87,7 +87,7 @@ EOF
 
 install_user_launch_agent() {
     users=$(dscl . list /Users | grep -v '_\|daemon\|jamfadmin\|nobody\|root')
-    for i in $users
+    while IFS= read -r i
         do
             echo "$(date -u) - Installing LaunchAgent for user $i"
             if [[ ! -d "/Users/$i/Library/LaunchAgents" ]]; then
@@ -116,18 +116,20 @@ install_user_launch_agent() {
 </dict>
 </plist>
 EOF
-                chown "$i":"staff" "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist"
+                # Fix a weird edge case that only seemed to impact one of our users.
+                chown_username=$(echo "$i" | tr '[:upper:]' '[:lower:]')
+                chown "$chown_username":"staff" "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist"
             fi
-    done
+    done <<< "$users"
 }
 
 remove_user_launch_agent() {
     users=$(dscl . list /Users | grep -v '_\|daemon\|jamfadmin\|nobody\|root')
-    for i in $users
+    while IFS= read -r i
         do
             echo "$(date -u) - Removing LaunchAgent for user $i"
             rm -f "/Users/$i/Library/LaunchAgents/corp.sap.privileges.plist"
-    done
+    done <<< "$users"
 }
 
 install() {
