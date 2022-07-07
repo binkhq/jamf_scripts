@@ -16,7 +16,7 @@ install() {
     echo "$(date -u) - Installing Tableau Prep Builder"
     curl -sS -L "https://downloads.tableau.com/esdalt/tableau_prep/2022.2.1/TableauPrep-2022-2-1.dmg" -o "/tmp/tableau.dmg"
     hdiutil attach "/tmp/tableau.dmg" >/dev/null
-    installer -pkg /Volumes/Tableau\ Prep\ Builder/Tableau\ Prep\ Builder.pkg.pkg -target /
+    installer -pkg /Volumes/Tableau\ Prep\ Builder/Tableau\ Prep\ Builder.pkg -target /
     hdiutil eject /Volumes/Tableau* >/dev/null
     rm "/tmp/tableau.dmg"
 }
