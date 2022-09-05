@@ -2,7 +2,7 @@
 
 install_sketch() {
     echo "$(date -u) - Installing Sketch"
-    curl -sS -L "$(curl -sS https://www.sketch.com/updates/ | grep zip | head -n 1 | cut -d'"' -f 2)" -o /tmp/sketch.zip
+    curl -sS -L "$(curl -sS https://www.sketch.com/updates/ 2>/dev/null | grep zip | head -n 1 | cut -d'"' -f 4)" -o /tmp/sketch.zip
     unzip -o /tmp/sketch.zip -d /tmp >/dev/null
     killall -KILL "Sketch" 2>/dev/null | true
     if [ -d "/Applications/Sketch.app" ]
