@@ -24,11 +24,10 @@ fetch_jq() {
         arch="intel"
         link="https://binkpublic.blob.core.windows.net/public/jq/1.6/amd64"
     fi
-    if [ ! -f "/tmp/jq" ]; then
-        echo "$(date -u) - Installing jq for $arch"
-        curl -sS $link -o /tmp/jq
-        chmod +x /tmp/jq
-    fi
+    rm -f /tmp/jq
+    echo "$(date -u) - Installing jq for $arch"
+    curl -sS $link -o /tmp/jq
+    chmod +x /tmp/jq
 }
 
 uninstall() {
