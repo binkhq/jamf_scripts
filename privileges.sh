@@ -85,7 +85,7 @@ EOF
 }
 
 install_user_launch_agent() {
-    users=$(dscl . list /Users | grep -v '_\|daemon\|jamfadmin\|nobody\|root')
+    users=$(dscl . list /Users | grep -ve '^_\|daemon\|jamfadmin\|nobody\|root')
     while IFS= read -r i
         do
             echo "$(date -u) - Installing LaunchAgent for user $i"
